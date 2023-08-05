@@ -1,0 +1,112 @@
+1-CREATE TABLE country(
+  	id SERIAL PRIMARY KEY,
+  	name VARCHAR(50)NOT NULL              // create country table
+  );
+
+
+CREATE TABLE team(
+  	id SERIAL PRIMARY KEY,
+  	name VARCHAR(50) NOT NULL,
+  	foundation_year DATE NOT NULL,
+  	goal_score INTEGER NOT NULL,                   //create team table
+  	lost_score INTEGER NOT NULL,
+  	level_of_league INTEGER NOT NULL,
+  	id_league INTEGER  REFERENCES league(id)
+  	point INTEGER;
+  );
+
+
+CREATE TABLE league(
+	id SERIAL PRIMARY KEY,                           //create league table
+	name VARCHAR(50) NOT NULL,
+	id_country INTEGER REFERENCES country(id)
+);
+
+CREATE TABLE players(
+	id SERIAL PRIMARY KEY,
+	first_name VARCHAR(50) NOT NULL,
+	last_name VARCHAR(50) NOT NULL,                      //create players table
+	id_team INTEGER REFERENCES team(id),
+	id_country INTEGER REFERENCES country(id),
+	goal_score INTEGER NOT NULL
+);
+
+-----------------------------------------------------------------------------------------
+
+
+2-INSERT INTO country(name)
+  VALUES ('Türkiye'),
+         ('Almanya'),                              //values to country table
+  	   ('İngiltere'),
+  	   ('Hollanda'),
+  	   ('Fransa');
+
+
+  INSERT INTO league(name ,id_country)
+  VALUES  ('Super League',3),                     //values to league
+  ('1.League',2),
+  ('La Liga',1),
+  ('Serie A',5),
+  ('Arsenal',2);
+
+
+
+
+  INSERT INTO team(name,foundation_year,goal_score,lost_score,level_of_league,id_league)
+  VALUES ('Fener Bahçe','1907.11.01',100,100,1,2,2),
+  ('Beşiktaş','1903.11.02',50,50,1,3,3),
+  ('Galatasaray','1905.11.03',55,50,2,2,3),                    //team table values
+  ('Gaziantep','1927.11.04',100,0,1,3,8),
+  ('Lost Team','2023.11.05',0,100,5,1,10);
+
+
+INSERT INTO players(first_name,last_name,id_team,id_country,goal_score)
+VALUES ('Mesut','Özil',1,4,50),
+('Marie','Crue',5,2,100),
+('Albert','Einstein',3,3,100),                                    //players  table values
+('Lionel','Messi',2,4,20),
+('Arda','Turan',4,5,35);
+
+-----------------------------------------------------------------------------------------------
+3-SELECT league.name FROM country
+  INNER JOIN league ON league.id_country=country.id
+  WHERE country.name='Türkiye';
+----------------------------------------------------------------------------------------------
+4-SELECT team.name FROM team
+  INNER JOIN league ON league.id=team.id_league
+  INNER JOIN country ON league.id_country=country.id
+  WHERE country.name='Türkiye';
+
+
+----------------------------------------------------------------------------------------------
+5-SELECT team.point FROM team
+    INNER JOIN league ON league.id=team.id_league
+    INNER JOIN country ON league.id_country=country.id
+    WHERE country.name='Türkiye'
+    ORDER BY team.point;
+
+---------------------------------------------------------------------------------------------
+
+6-SELECT AVG(team.point) FROM team
+    INNER JOIN league ON league.id=team.id_league
+    INNER JOIN country ON league.id_country=country.id
+    WHERE country.name='Türkiye';
+
+---------------------------------------------------------------------------------------------
+
+7-SELECT players.first_name,players.last_name,team.name,country.name AS country FROM players
+  INNER JOIN country ON country.id=players.id_country
+  INNER JOIN team ON team.id=players.id_team
+  ORDER BY players.goal_score DESC;
+
+--------------------------------------------------------------------------------------------
+
+8-SELECT team.name FROM team
+  WHERE team.goal_score>team.lost_score;
+
+--------------------------------------------------------------------------------------------
+9-SELECT team.name, team.goal_score , SUM(players.goal_score)
+  FROM Team
+  JOIN Players ON team.id = players.id_team
+  WHERE team.id = 1
+  GROUP BY team.name, team.goal_score;
